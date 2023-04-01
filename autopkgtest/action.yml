@@ -1,0 +1,17 @@
+name: 'autopkgtest'
+description: 'Run autopkgtest on a Debian package'
+inputs:
+  package:
+    description: 'The package to run autopkgtest on'
+    required: true
+    default: '*.changes'
+  base-image:
+    description: 'The base-image to run autopkgtest in'
+    required: false
+    default: 'debian:sid'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.package }}
+    - ${{ inputs.base-image }}
