@@ -1,0 +1,31 @@
+name: piuparts
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        description: 'The package to run piuparts on'
+        type: 'string'
+        default: '*.changes'
+      base-image:
+        description: 'The base image to run piuparts against'
+        type: 'string'
+        default: 'debian:sid'
+      fake-essential-packages:
+        description: 'Packages that should be added to the fake-essential-packages list'
+        type: 'string'
+        default: ''
+
+jobs:
+  piuparts:
+    runs-on: ubuntu-latest
+    needs: debian-binary
+    container:
+      image: debian:sid
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/lib/docker:/var/lib/docker
+    steps:
+      - run: apt-get update
+      - run: apt-get install -y --no-install-recommends piuparts docker.io
+      - run: piuparts ${{ inputs.package }} --docker-image ${{ inputs.base-image }} --fake-essential-packages ${{ inputs.fake-essential-packages }}
